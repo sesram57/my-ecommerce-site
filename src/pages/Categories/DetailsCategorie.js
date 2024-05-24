@@ -1,13 +1,13 @@
 import { Container, ListGroup, Row } from "react-bootstrap"
 import { useState,useEffect } from "react";
 
-function Produits() {
+function DetailsCategorie({url}) {
 
   const [status, setStatus] = useState('');
   const [itemList, setItemList] = useState([]);
   useEffect(()=>{
       setStatus('Loading');
-      const data = fetch(`https://dummyjson.com/products?limit=25`)
+      const data = fetch(`${url}?limit=1`)
       .then(res => res.json())
       .then( setItemList)
       .then(()=>setStatus('Success'))
@@ -36,4 +36,4 @@ function Produits() {
 
 
 
-export default Produits
+export default DetailsCategorie
