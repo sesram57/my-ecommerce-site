@@ -2,15 +2,16 @@ import { Col, Container, Image, Ratio, Row } from "react-bootstrap"
 import logo from "../../assets/close-up-composition-four-smartphones.jpg"
 import { useState,useEffect } from "react";
 import Card from 'react-bootstrap/Card';
+import axios from "axios";
 
 function Accueil() {
     const [status, setStatus] = useState('');
     const [itemList, setItemList] = useState([]);
     useEffect(()=>{
         setStatus('Loading');
-        fetch('https://dummyjson.com/products?limit=6')
-    .then(res => res.json())
-    .then( setItemList)
+        axios.get('https://dummyjson.com/products?limit=6')
+    // .then(res => res.json())
+    .then(res=> setItemList(res.data))
     .then(()=>setStatus('Success'))
       .catch(()=>setStatus('Error'));
     }, []);
@@ -28,7 +29,7 @@ function Accueil() {
       </Row>
       <Row className="pt-3">
         <h2>Nos derniers produits</h2>
-        <Row className="flex flex-col">
+        <Row className="flex flex-col gx-3">
         {status === 'Loading' && <div>Loading...</div>}
       {status === 'Error' && <div>There was an error</div>}
       {status === 'Success'&& itemList.products.map(item => (

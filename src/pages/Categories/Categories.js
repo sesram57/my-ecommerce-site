@@ -1,41 +1,48 @@
-import { Container, ListGroup,  Row } from "react-bootstrap"
-import { useState,useEffect, Link } from "react";
+import { Container, Row, Badge, Stack } from "react-bootstrap"
+import { useState,useEffect} from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 function Categories() {
-    const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('');
   const [itemList, setItemList] = useState([]);
-    useEffect(()=>{
-        setStatus('Loading');
-      const data = fetch('https://dummyjson.com/products/categories')
-      .then(res => res.json())
-    .then( setItemList)
-    .then(()=>setStatus('Success'))
-      .catch(()=>setStatus('Error'));
-      }, []);
-      return (
-      <Container>
-          <h1>
-              Produits
-              </h1>
-              <Row className="pt-3">
-              {console.log(itemList)}
-              <ListGroup>
-                
-              {status === 'Loading' && <div>Loading...</div>}
-                {status === 'Error' && <div>There was an error</div>}
-                {status === 'Success'&& itemList.map(item => (
-                  <ListGroup.Item key={item.slug} className="col-12">
-                    <Link href="/catégories_details" categorie={item.url}>
-                        {item.name}
-                    </Link>
-                  </ListGroup.Item>
-         ))}
+  useEffect(()=>{
+    setStatus('Loading');
+    axios.get('https://dummyjson.com/products/categories')
+      // .then(res => res.json())
+      .then(res=> setItemList(res.data))
+      .then(()=>{setStatus('Success');console.log('success')})
+      .catch((e)=>{setStatus('Error');console.log(e)});
+      },
+    []
+  );
+  return (
+  <Container>
+      <h1>
+          Catégories
+      </h1>
+      <Row className="pt-3">
+        {console.log('itemList:')}
+        {console.log(itemList)}
 
-          </ListGroup>
-        </Row>
-  
-          </Container>
-  )}
-  
+          <h2>
+          <Stack direction="horizontal" gap={5} className="justify-content-evenly flex-wrap">
+            {status === 'Loading' && <div>Loading...</div>}
+            {status === 'Error' && <div>There was an error</div>}
+            {status === 'Success'&& itemList.map(item => (
+              <Link to={`/categories_details/${item.slug}`}  key={item.slug}>
+                <Badge bg="primary">
+                  {item.name}
+                </Badge>
+              </Link>
+            ))}
+            </Stack>
+          </h2>
+
+      </Row>
+    </Container>
+  )
+}
+
 
 export default Categories
