@@ -1,7 +1,16 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-function MyNavbar() {
+import { useNavigate } from 'react-router-dom';
+
+
+function MyNavbar({estLoggue}) {
+  
+  const navigate = useNavigate();
+  const seDeconnecter = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -12,9 +21,11 @@ function MyNavbar() {
         <Nav.Link href="/" >
         Accueil
         </Nav.Link>
-        <Nav.Link href="/categories">Catégories</Nav.Link>
-        <Nav.Link href="/produits">Produits</Nav.Link>
-      <Nav.Link href="/contact">Contact</Nav.Link> 
+        {estLoggue() && <Nav.Link href="/categories">Catégories</Nav.Link>}
+        {estLoggue() && <Nav.Link href="/produits">Produits</Nav.Link>}
+          {estLoggue() && <Nav.Link href="/contact">Contact</Nav.Link> }
+            {estLoggue() && <Nav.Link href="/panier">Panier</Nav.Link> }
+        {estLoggue() && <Nav.Link onClick={seDeconnecter}>Déconnexion</Nav.Link>}
         </Nav>
         </Navbar.Collapse>
       </Container>

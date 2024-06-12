@@ -9,6 +9,7 @@ function Accueil() {
     const [itemList, setItemList] = useState([]);
     useEffect(()=>{
         setStatus('Loading');
+        const token = JSON.parse(localStorage.getItem('loginToken')) || [];
         axios.get('https://dummyjson.com/products?limit=6')
     // .then(res => res.json())
     .then(res=> setItemList(res.data))
@@ -29,18 +30,19 @@ function Accueil() {
       </Row>
       <Row className="pt-3">
         <h2>Nos derniers produits</h2>
-        <Row className="flex flex-col gx-3">
+        <Row xs={1} md={2} lg={3} xl={6} className="g-4">
         {status === 'Loading' && <div>Loading...</div>}
       {status === 'Error' && <div>There was an error</div>}
       {status === 'Success'&& itemList.products.map(item => (
-                <Card key={item.id} className="col-xs-12 col-md-4 col-sm-6 col-lg-2">
-                    <Card.Img variant="top" src={item.thumbnail} />
-                    <Card.Body>
-                        <Card.Title>{item.title}</Card.Title>
-                        <Card.Text>{item.description}</Card.Text>
-                    </Card.Body>
-                    
+                <Col key={item.id}>
+                <Card>
+                  <Card.Img variant="top" src={item.thumbnail} />
+                  <Card.Body>
+                    <Card.Title>{item.title}</Card.Title>
+                    <Card.Text>{item.description}</Card.Text>
+                  </Card.Body>
                 </Card>
+              </Col>
        ))}
         </Row>
       </Row>

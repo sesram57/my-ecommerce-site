@@ -1,70 +1,58 @@
-import { Card, Container,  Stack, Pagination } from "react-bootstrap"
-import { useState,useEffect } from "react";
+import { Container, Stack, Pagination } from "react-bootstrap";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
+import MyProduct from "../../components/MyProduct/MyProduct";
 function Produits() {
-
   const [status, setStatus] = useState('');
   const [itemList, setItemList] = useState([]);
-  const [infoPage, setInfoPage]= useState({current:1,total:0});
-  const itemsPerPage = 10;
+  const [infoPage, setInfoPage] = useState({ current: 1, total: 0 });
+  const itemsPerPage = 16;
+  // Function to change the current page
   const changePage = (i) => {
-    if (i>0 && i<infoPage.total) {
-      const newPage ={...infoPage, current:i}
-      //setInfoPage(newPage)
+    if (i > 0 && i <= Math.ceil(infoPage.total / itemsPerPage)) {
+      setInfoPage({ ...infoPage, current: i });
     }
-  }
-  let pagesList =[];
-  for (let i =1; i<=Math.ceil(infoPage.total/itemsPerPage); i++) {
+  };
+  // Generate the list of page items for the pagination component
+  const pagesList = [];
+  for (let i = 1; i <= Math.ceil(infoPage.total / itemsPerPage); i++) {
     pagesList.push(
-    <Pagination.Item key={i} active={i === infoPage.current} onClick={changePage(i)}>
-      {i}
-    </Pagination.Item>
+      <Pagination.Item key={i} active={i === infoPage.current} onClick={() => changePage(i)}>
+        {i}
+      </Pagination.Item>
     );
   }
-  
-  useEffect(()=>{
-      setStatus('Loading');
-      
-      axios.get(`https://dummyjson.com/products?limit=${infoPage.current*itemsPerPage}&skip=${(infoPage.current-1)*itemsPerPage}`)
-      // .then(res => res.json())
-      .then(res=> {setItemList(res.data);setInfoPage({...infoPage, total:res.data.total})})
-      .then(()=>setStatus('Success'))
-      .catch(()=>setStatus('Error'));
-    }, []);
-
-    
-    return (
+  // Fetch the products from the API when the component mounts or the page changes
+  useEffect(() => {
+    setStatus('Loading');
+    axios
+      .get(`https://dummyjson.com/products?limit=${itemsPerPage}&skip=${(infoPage.current - 1) * itemsPerPage}`)
+      .then(res => {
+        // Update the item list and the total number of items
+        setItemList(res.data.products);
+        setInfoPage(prevInfoPage => ({ ...prevInfoPage, total: res.data.total }));
+        setStatus('Success');
+      })
+      .catch(() => setStatus('Error'));
+  }, [infoPage.current]);
+  return (
     <Container>
-        <h1>
-            Produits
-            </h1>
-            <Stack direction="horizontal" gap={5} className="justify-content-evenly flex-wrap">
-            {console.log(itemList)}
-            {console.log(infoPage.total)}
-                          
-            {status === 'Loading' && <div>Loading...</div>}
-      {status === 'Error' && <div>There was an error</div>}
-      {status === 'Success'&& itemList.products.map(item => (
-
-                
-                  <Card style={{ width: '18rem' }} key={item.id}>
-      <Card.Body>
-        <Card.Title>{item.title}</Card.Title>
-        <Card.Text>
-        {item.description}
-        </Card.Text>
-      </Card.Body>
-    </Card> 
-               ))}
-       <div>
-                  <Pagination>{pagesList}</Pagination>
-               </div>
+      <h1>Produits</h1>
+      <Stack direction="horizontal" gap={5} className="justify-content-evenly flex-wrap">
+        {/* Display loading message */}
+        {status === 'Loading' && <div>Loading...</div>}
+        {/* Display error message */}
+        {status === 'Error' && <div>There was an error</div>}
+        {/* Display the list of products */}
+        {status === 'Success' && itemList.map(item => (
+          <MyProduct item={item} />
+        ))}
+        {/* Display pagination component */}
+        <div>
+          <Pagination>{pagesList}</Pagination>
+        </div>
       </Stack>
-               
-        </Container>
-)}
-
-
-
-export default Produits
+    </Container>
+  );
+}
+export default Produits;
